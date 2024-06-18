@@ -5,10 +5,9 @@ const bookList = document.getElementById("bookList");
 const loading = document.getElementById("loading");
 
 button.addEventListener("click", () => {
-    searchBooks()
+    searchBooks();
 })
-
-function searchBooks(){
+function searchBooks() {
     const categoryValue = category.value.trim();
     if (categoryValue === "") {
         const li = document.createElement("li");
@@ -35,7 +34,7 @@ function searchBooks(){
                 books.forEach(book => {
                     const li = document.createElement("li");
                     li.classList.add("item");
-                    
+
                     //Creazione del titolo del libro e autori
                     const titleAuthorContainer = document.createElement("div");
                     const authors = book.author_name ? book.author_name.join(", ") : "Autore sconosciuto";
@@ -43,7 +42,7 @@ function searchBooks(){
                     bookList.appendChild(li);
 
                     //Creazione dell'immagine
-                    if(book.cover_i){
+                    if (book.cover_i) {
                         const coverUrl = `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`;
                         const img = document.createElement("img");
                         img.src = coverUrl;
@@ -72,38 +71,38 @@ function searchBooks(){
             li.textContent = "Ricerca dei libri fallita, per favore riprovare.";
             bookList.appendChild(li);
         })
-        .finally(()=>{
+        .finally(() => {
             console.log("nascondi caricamento (finally)")
             loading.hidden = true;
         })
 }
 
-function getBookDescription(bookKey, listItem){
+function getBookDescription(bookKey, listItem) {
     const categoryValue = category.value.trim()
     fetch(`https://openlibrary.org${bookKey}.json`)
-    .then(response => {
-        if (!response.ok) {
-            throw new Error("Errore durante la richiesta");
-        }
-        return response.json();
-    })
-    .then(data => {
-        let description = "Descrizione non disponibile";
-        if (data.description){
-            if(typeof data.description === "string"){
-                description = data.description;
-            } else if (data.description.value){
-                description = data.description.value;
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Errore durante la richiesta");
             }
-        }
-        const descriptionElement = document.createElement("p");
-        descriptionElement.textContent = description;
-        listItem.appendChild(descriptionElement);
-    })
-    .catch(error => {
-        console.error("Errore durante la richiesta", error);
-        const descriptionElement = document.createElement("p");
-        descriptionElement.textContent = "Descrizione non disponibile";
-        document.body.appendChild(descriptionElement);
-    })
+            return response.json();
+        })
+        .then(data => {
+            let description = "Descrizione non disponibile";
+            if (data.description) {
+                if (typeof data.description === "string") {
+                    description = data.description;
+                } else if (data.description.value) {
+                    description = data.description.value;
+                }
+            }
+            const descriptionElement = document.createElement("p");
+            descriptionElement.textContent = description;
+            listItem.appendChild(descriptionElement);
+        })
+        .catch(error => {
+            console.error("Errore durante la richiesta", error);
+            const descriptionElement = document.createElement("p");
+            descriptionElement.textContent = "Descrizione non disponibile";
+            document.body.appendChild(descriptionElement);
+        })
 }
