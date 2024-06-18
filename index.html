@@ -1,17 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>more books</title>
+    <meta name="author" content="Giacomo Montepino">
+    <meta name="description" content="Libreria online">
+    <meta name="keywords" content="HTML, CSS, javascript">
+    <meta property="og:title" content="Libreria online" />
+    <meta property="og:type" content="Website" />
+    <meta property="url" content="http://127.0.0.1:5500/index.html" />
+    <title>Libreria online</title>
     <link rel="stylesheet" href="/assets/style.css">
+    <link rel="icon" type="image/x-icon" href="/assets/img/Favicon.ico">
 </head>
+
 <body>
     <div class="container">
-        <h1>Cerca il tuo libro preferito</h1>
+        <h1>Cerca la tua categoria preferita</h1>
         <form id="searchForm">
             <input id="category" name="category" type="text" placeholder="Inserisci la categoria">
-            <button type="button" id="button">Invia</button>
+            <button type="button" id="button">Cerca</button>
             <div id="loading" hidden>Caricamento in corso..</div>
         </form>
         <ul class="list" id="bookList"></ul>
@@ -20,4 +29,5 @@
 
     <script src="/assets/script.js"></script>
 </body>
+
 </html>

@@ -35,9 +35,24 @@ function searchBooks(){
                 books.forEach(book => {
                     const li = document.createElement("li");
                     li.classList.add("item");
+                    
+                    //Creazione del titolo del libro e autori
+                    const titleAuthorContainer = document.createElement("div");
                     const authors = book.author_name ? book.author_name.join(", ") : "Autore sconosciuto";
                     li.textContent = `${book.title} by ${authors}`;
                     bookList.appendChild(li);
+
+                    //Creazione dell'immagine
+                    if(book.cover_i){
+                        const coverUrl = `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`;
+                        const img = document.createElement("img");
+                        img.src = coverUrl;
+                        img.alt = `${book.title} cover`;
+                        img.classList.add("cover");
+                        li.appendChild(img);
+                    }
+
+                    //Creazione del bottone info
                     const btnDescription = document.createElement("button");
                     btnDescription.textContent = "Info";
                     btnDescription.addEventListener("click", () => {
