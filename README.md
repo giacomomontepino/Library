@@ -26,3 +26,5 @@ Quest'applicazione web è stata progettata per aiutare gli utenti a trovare e sc
     - Per ogni libro nei risultati della ricerca, cliccare sul pulsante "info".
     - Verrà effettuata una chiamata API ad Open Library per ottenere la descrizione del libro selezionato e visualizzarla. 
 
+# Link Utili
+- **Applicazione web:** https://librarygiacomomontepino.netlify.app/
