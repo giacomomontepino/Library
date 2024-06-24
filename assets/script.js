@@ -28,7 +28,7 @@ function searchBooks() {
             return response.json();
         })
         .then(data => {
-            const books = data.docs;
+            const books = _.get(data, "docs", []);
             bookList.innerHTML = "";
             if (books && books.length > 0) {
                 books.forEach(book => {
@@ -37,12 +37,13 @@ function searchBooks() {
 
                     //Creazione del titolo del libro e autori
                     const titleAuthorContainer = document.createElement("div");
-                    const authors = book.author_name ? book.author_name.join(", ") : "Autore sconosciuto";
+                    const authors = _.get(book, "author_name", ["Autore sconosciuto"]).join(",");
                     li.textContent = `${book.title} by ${authors}`;
                     bookList.appendChild(li);
 
                     //Creazione dell'immagine
-                    if (book.cover_i) {
+                    const coverId = _.get(book, "cover_i");
+                    if (coverId) {
                         const coverUrl = `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`;
                         const img = document.createElement("img");
                         img.src = coverUrl;
@@ -87,16 +88,10 @@ function getBookDescription(bookKey, listItem) {
             return response.json();
         })
         .then(data => {
-            let description = "Descrizione non disponibile";
-            if (data.description) {
-                if (typeof data.description === "string") {
-                    description = data.description;
-                } else if (data.description.value) {
-                    description = data.description.value;
-                }
-            }
+            const description = _.get(data, "description", "Descrizione non disponibile");
+            const descriptionText = typeof description === "string" ? description : _.get(description, "value", "Descrizione non disponibile");
             const descriptionElement = document.createElement("p");
-            descriptionElement.textContent = description;
+            descriptionElement.textContent = descriptionText;
             listItem.appendChild(descriptionElement);
         })
         .catch(error => {
