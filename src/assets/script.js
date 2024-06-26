@@ -1,3 +1,5 @@
+import "./style.css"
+
 const url = "https://openlibrary.org/search.json";
 const button = document.getElementById("button");
 const category = document.getElementById("category");
@@ -20,15 +22,9 @@ function searchBooks() {
     loading.hidden = false
     bookList.innerHTML = "";
 
-    fetch(`${url}?q=${categoryValue}&mode=everything`)
+    axios.get(`${url}?q=${categoryValue}&mode=everything`)
         .then(response => {
-            if (!response.ok) {
-                throw new Error("Errore durante la richiesta");
-            }
-            return response.json();
-        })
-        .then(data => {
-            const books = _.get(data, "docs", []);
+            const books = _.get(response.data, "docs", []);
             bookList.innerHTML = "";
             if (books && books.length > 0) {
                 books.forEach(book => {
@@ -80,15 +76,9 @@ function searchBooks() {
 
 function getBookDescription(bookKey, listItem) {
     const categoryValue = category.value.trim()
-    fetch(`https://openlibrary.org${bookKey}.json`)
+    axios.get(`https://openlibrary.org${bookKey}.json`)
         .then(response => {
-            if (!response.ok) {
-                throw new Error("Errore durante la richiesta");
-            }
-            return response.json();
-        })
-        .then(data => {
-            const description = _.get(data, "description", "Descrizione non disponibile");
+            const description = _.get(response.data, "description", "Descrizione non disponibile");
             const descriptionText = typeof description === "string" ? description : _.get(description, "value", "Descrizione non disponibile");
             const descriptionElement = document.createElement("p");
             descriptionElement.textContent = descriptionText;
