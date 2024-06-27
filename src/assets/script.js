@@ -1,93 +1,97 @@
 import "./style.css"
 
-const url = "https://openlibrary.org/search.json";
+const url = "https://openlibrary.org";
 const button = document.getElementById("button");
 const category = document.getElementById("category");
 const bookList = document.getElementById("bookList");
 const loading = document.getElementById("loading");
 
 button.addEventListener("click", () => {
-    searchBooks();
-})
+  searchBooks();
+});
+
 function searchBooks() {
-    const categoryValue = category.value.trim();
-    if (categoryValue === "") {
-        const li = document.createElement("li");
-        li.textContent = "Per favore, inserisci una categoria di ricerca";
-        bookList.innerHTML = "";
-        bookList.appendChild(li);
-        return;
-    }
+  const categoryValue = category.value.trim();
+  if (categoryValue === "") {
+    displayMessage("Per favore, inserisci una categoria di ricerca");
+    return;
+  }
 
-    loading.hidden = false
-    bookList.innerHTML = "";
+  loading.hidden = false;
+  bookList.innerHTML = "";
 
-    axios.get(`${url}?q=${categoryValue}&mode=everything`)
-        .then(response => {
-            const books = _.get(response.data, "docs", []);
-            bookList.innerHTML = "";
-            if (books && books.length > 0) {
-                books.forEach(book => {
-                    const li = document.createElement("li");
-                    li.classList.add("item");
-
-                    //Creazione del titolo del libro e autori
-                    const titleAuthorContainer = document.createElement("div");
-                    const authors = _.get(book, "author_name", ["Autore sconosciuto"]).join(",");
-                    li.textContent = `${book.title} by ${authors}`;
-                    bookList.appendChild(li);
-
-                    //Creazione dell'immagine
-                    const coverId = _.get(book, "cover_i");
-                    if (coverId) {
-                        const coverUrl = `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`;
-                        const img = document.createElement("img");
-                        img.src = coverUrl;
-                        img.alt = `${book.title} cover`;
-                        img.classList.add("cover");
-                        li.appendChild(img);
-                    }
-
-                    //Creazione del bottone info
-                    const btnDescription = document.createElement("button");
-                    btnDescription.textContent = "Info";
-                    btnDescription.addEventListener("click", () => {
-                        getBookDescription(book.key, li);
-                    });
-                    li.appendChild(btnDescription);
-                })
-            } else {
-                const li = document.createElement("li");
-                li.textContent = "Non ci sono libri in questa categoria";
-                bookList.appendChild(li);
-            }
-        })
-        .catch(error => {
-            console.error("Errore durante la richiesta", error);
-            const li = document.createElement("li");
-            li.textContent = "Ricerca dei libri fallita, per favore riprovare.";
-            bookList.appendChild(li);
-        })
-        .finally(() => {
-            console.log("nascondi caricamento (finally)")
-            loading.hidden = true;
-        })
+  axios.get(`${url}/subjects/${categoryValue}.json?detail=true`)
+    .then(response => {
+      const works = _.get(response.data, "works", []);
+      bookList.innerHTML = "";
+      if (works && works.length > 0) {
+        works.forEach(work => {
+          const li = document.createElement("li");
+          li.classList.add("item");
+          bookList.appendChild(li);
+          displayBookDetails(work, li);
+          displayBookCover(work, li);
+          addInfoButton(work, li);
+        });
+      } else {
+        displayMessage("Non ci sono libri in questa categoria");
+      }
+    })
+    .catch(error => {
+      console.error("Errore durante la richiesta", error);
+      displayMessage("Ricerca dei libri fallita, per favore riprovare.");
+    })
+    .finally(() => {
+      loading.hidden = true;
+    });
 }
 
-function getBookDescription(bookKey, listItem) {
-    const categoryValue = category.value.trim()
-    axios.get(`https://openlibrary.org${bookKey}.json`)
-        .then(response => {
-            const description = _.get(response.data, "description", "Descrizione non disponibile");
-            const descriptionText = typeof description === "string" ? description : _.get(description, "value", "Descrizione non disponibile");
-            const descriptionElement = document.createElement("p");
-            descriptionElement.textContent = descriptionText;
-            listItem.appendChild(descriptionElement);
-        })
-        .catch(error => {
-            console.error("Errore durante la richiesta", error);
-            const descriptionElement = document.createElement("p");
-            descriptionElement.textContent = "Descrizione non disponibile";
-            document.body.appendChild(descriptionElement);
-        })
+function displayMessage(message) {
+  const li = document.createElement("li");
+  li.textContent = message;
+  bookList.innerHTML = "";
+  bookList.appendChild(li);
+}
+
+function displayBookDetails(work, listItem) {
+  const authors = work.authors && work.authors.length > 0 ? work.authors.map(author => author.name).join(", ") : "Autore sconosciuto";
+  listItem.textContent = `${work.title} by ${authors}`;
+}
+
+function addInfoButton(work, listItem) {
+  const btnDescription = document.createElement("button");
+  btnDescription.textContent = "Info";
+  btnDescription.addEventListener("click", () => {
+    getBookDescription(work.key, listItem);
+  });
+  listItem.appendChild(btnDescription);
+}
+
+function displayBookCover(work, listItem) {
+  const coverId = work.cover_id;
+  if (coverId) {
+    const coverUrl = `https://covers.openlibrary.org/b/id/${coverId}-M.jpg`;
+    const img = document.createElement("img");
+    img.src = coverUrl;
+    img.alt = `${work.title} cover`;
+    img.classList.add("cover");
+    listItem.appendChild(img);
+  }
+}
+
+function getBookDescription(workKey, listItem) {
+  axios.get(`https://openlibrary.org${workKey}.json`)
+    .then(response => {
+      const description = _.get(response.data, "description", "Descrizione non disponibile");
+      const descriptionText = typeof description === "string" ? description : _.get(description, "value", "Descrizione non disponibile");
+      const descriptionElement = document.createElement("p");
+      descriptionElement.textContent = descriptionText;
+      listItem.appendChild(descriptionElement);
+    })
+    .catch(error => {
+      console.error("Errore durante la richiesta", error);
+      const descriptionElement = document.createElement("p");
+      descriptionElement.textContent = "Descrizione non disponibile";
+      listItem.appendChild(descriptionElement);
+    });
 }
