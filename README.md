@@ -1,5 +1,5 @@
 # WebApp per Incentiva la Lettura 
-![schermata dell'applicazione](assets/img/screen.png) 
+![schermata dell'applicazione](src/assets/img/screen.png) 
 
 Quest'applicazione web è stata progettata per aiutare gli utenti a trovare e scoprire nuovi libri da leggere. Utilizza il servizio esterno Open Library per cercare libri in base alla categoria e mostrare informazioni dettagliate sui libri selezionati. 
 
