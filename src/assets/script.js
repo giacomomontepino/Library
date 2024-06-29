@@ -1,4 +1,6 @@
 import "./style.css"
+import axios from "axios"
+import _ from "lodash"
 
 const url = "https://openlibrary.org";
 const button = document.getElementById("button");
